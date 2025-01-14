@@ -1,5 +1,8 @@
 # reservasdb
-Scripts de base de datos
+Scripts de base de datos.
+
+Motor DB: Postgresql
+Versión: 12
 
 
 ## Uso de imágenes para propósito de pruebas / no comercial
