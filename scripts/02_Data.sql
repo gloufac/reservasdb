@@ -13,6 +13,7 @@ INSERT INTO public.capacidad (capacidad, http_get, http_post, http_update, http_
 INSERT INTO public.capacidad (capacidad, http_get, http_post, http_update, http_delete) VALUES('Solo actualizar', false, false, true, false);
 INSERT INTO public.capacidad (capacidad, http_get, http_post, http_update, http_delete) VALUES('Solo eliminar', false, false, false, true);
 
+-- delete from permisos_api; ALTER SEQUENCE permisos_api_id_seq RESTART WITH 1;
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/**');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/productos/**');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/productos/random/**');
@@ -25,9 +26,11 @@ INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/{id}');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/**');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/categorias');
-INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos'); -- 15
-INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos/**'); -- 17
-INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/calificarproducto'); -- 18
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos');
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos/**');
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/calificarproducto');
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/reservas/**');
+----INSERT INTO public.permisos_api ("mapping") VALUES('/api/productos/detalle'); -- post put
 
 
 /************************************************************
@@ -37,12 +40,11 @@ INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/calificarprodu
 
 -- ------------------------------------------------------------------------------------------------
 -- delete from rol_capacidad_api;
-
 -- /api/productos/**
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 2); --ADMIN  1 Ver informacion
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 2); --INVITADO  1 Ver informacion
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 2); --CLIENTE 1 Ver informacion 
-2 6 
+
 -- 3	/api/productos/random/**
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 3);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 3);
@@ -53,10 +55,10 @@ INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 5);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 5);
 
--- 6	/api/access/**
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 6);
+-- 6	/api/access/**   TODO remover
+/*INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 6);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 6);
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 6);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 6);*/
 
 -- 7	/api/caracteristicas/**
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 7);
@@ -66,31 +68,36 @@ INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 
 -- 8	/api/auth/login post
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 8);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 6, 8); -- login post
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 8); -- refrescar token -- TODO clase platzi 16
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 8); -- refrescar token
 
--- 11	/api/usuarios/{id}
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 11);  -- usuario get by id -- TODO aplicar seguridad solo para el usuario loqueado, no que obtenga info de otro usuario, clase 16 platzi
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 11); 
+-- /api/usuarios/{id}
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 10);  -- usuario get by id
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 10);
 
 -- admin todo
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 3, 1); 
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 3, 1);
 
--- crear usuario
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 10); -- admin  crear usuario
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 6, 10); -- invitado crear usuario
+-- crear usuario /api/usuarios
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 9); -- admin  crear usuario
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 6, 9); -- invitado crear usuario
 
--- POST DELETE y GET para favoritos
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 15); -- POST
+-- POST DELETE y GET para favoritos:: /api/usuarios/favoritos    /api/usuarios/favoritos/**
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 13); -- POST
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 13);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 8, 13); -- DELETE
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 8, 13);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 14);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 14);
+
+-- POST calificar producto:: /api/usuarios/calificarproducto
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 15);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 15);
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 8, 15); -- DELETE
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 8, 15);
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 17);
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 17);
 
--- POST calificar producto
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 18);
-INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 18);
-
+-- /api/reservas/**  POST  admin and customer
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 16);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 16);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 16);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 16);
 
 -- =============================================================
 -- ============= SPRINT 03 =====================================
