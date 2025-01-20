@@ -121,7 +121,7 @@ ALTER TABLE producto ADD COLUMN politica text null;
 ALTER TABLE producto ADD COLUMN es_eliminado boolean default false;
 ALTER TABLE categoria ADD COLUMN es_eliminado boolean default false;
 ALTER TABLE usuario ADD COLUMN email_confirmado boolean default false; -- TODO: implementar BE FE
-ALTER TABLE usuario ADD COLUMN es_eliminado boolean default false; -- TODO: implementar BE
+ALTER TABLE usuario ADD COLUMN es_eliminado boolean default false;
 ALTER TABLE permisos_api ADD COLUMN api_orden int default 0; -- TODO revisar si se va a aplicar o no
 
 
@@ -191,20 +191,10 @@ CREATE TABLE producto_detalle (
 	CONSTRAINT fk_producto FOREIGN KEY(producto_id) REFERENCES producto(id),
 	CONSTRAINT fk_tipo_detalle FOREIGN KEY(tipo_detalle_id) REFERENCES tipo_detalle(id)
 );
-
-
--- el precio es por ciertas fechas - descripcion de una habitacion, precio por persona
-CREATE TABLE producto_detalle_precio (
-	id serial4 NOT NULL,
-	producto_detalle_id int NOT NULL,
-	fecha_inicio int8 NOT NULL,
-	fecha_fin int8 NOT NULL,
-	moneda_id int not null,
-	precio numeric(16,3) not null,
-	CONSTRAINT producto_detalle_precio_pkey PRIMARY KEY (id),
-	CONSTRAINT fk_producto_detalle FOREIGN KEY(producto_detalle_id) REFERENCES producto_detalle(id),
-	CONSTRAINT fk_moneda FOREIGN KEY(moneda_id) REFERENCES moneda(id)
-);
+ALTER TABLE producto_detalle ADD COLUMN disponibles int not null default 0; -- cantidad de habitaciones de la misma disponibles
+ALTER TABLE producto_detalle ADD COLUMN moneda_id int not null;
+ALTER TABLE producto_detalle ADD COLUMN precio numeric(16,3) not null default 0;
+ALTER TABLE producto_detalle ADD CONSTRAINT fk_moneda FOREIGN KEY(moneda_id) REFERENCES moneda(id);
 
 -- caracteristicas de una habitacion ejemplo
 CREATE TABLE producto_detalle_caracteristica (
@@ -219,7 +209,7 @@ CREATE UNIQUE INDEX producto_detalle_caracteristica_ui ON producto_detalle_carac
 -- DISPONIBILIDAD --- solo por la reserva, se asume que la habitacion está siempre disponible, no se maneja indisponibilidad
 -- DROP TABLE IF EXISTS reserva;
 CREATE TABLE reserva (
-	id serial4 NOT NULL,
+	id bigserial NOT NULL,
 	codigo_reserva varchar (50) not null,
 	usuario_id integer not null,
 	tipo_identificacion varchar(5) not null,
@@ -229,11 +219,17 @@ CREATE TABLE reserva (
 	fecha_fin int8 NOT NULL,
 	cantidad_personas_adultas int not null,
 	cantidad_ninos int not null,
+	moneda_id int not null,
 	precio_total numeric(16,3) not null,
 	peticiones_especiales text null,
 	fecha_creacion int8 NOT NULL default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint,
 	fecha_modificacion int8 null,
 	CONSTRAINT reserva_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_usuario FOREIGN KEY(usuario_id) REFERENCES usuario(id),
-	CONSTRAINT fk_producto_detalle FOREIGN KEY(producto_detalle_id) REFERENCES producto_detalle(id)
+	CONSTRAINT fk_producto_detalle FOREIGN KEY(producto_detalle_id) REFERENCES producto_detalle(id),
+	CONSTRAINT fk_moneda FOREIGN KEY(moneda_id) REFERENCES moneda(id)
 );
+CREATE INDEX reserva_cr_ix ON public.reserva USING btree (codigo_reserva);
+CREATE UNIQUE INDEX reserva_ui ON reserva USING btree (usuario_id, producto_detalle_id, fecha_inicio);
+
+ALTER TABLE producto_detalle ADD COLUMN es_eliminado boolean default false not null;

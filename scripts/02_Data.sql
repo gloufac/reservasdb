@@ -95,3 +95,29 @@ INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 
 -- =============================================================
 -- ============= SPRINT 03 =====================================
 -- UPDATE caracteristica SET palabrasclave = nombre where palabrasclave  = '';
+
+-- =============================================================
+-- ============= SPRINT 04 =====================================
+--- base_conversion = el dolar 2025-01-17
+INSERT INTO public.moneda (moneda, base_conversion) VALUES('COP', 0.00023);
+INSERT INTO public.moneda (moneda, base_conversion) VALUES('ARS', 0.00096);
+INSERT INTO public.moneda (moneda, base_conversion) VALUES('MEX', 0.048);
+INSERT INTO public.moneda (moneda, base_conversion) VALUES('UYU', 0.023);
+INSERT INTO public.moneda (moneda, base_conversion) VALUES('PEN', 0.27);
+
+INSERT INTO public.tipo_detalle(nombre) VALUES('Habitación');
+INSERT INTO public.tipo_detalle(nombre) VALUES('Suite');
+INSERT INTO public.tipo_detalle(nombre) VALUES('Estudio');
+INSERT INTO public.tipo_detalle(nombre) VALUES('Apartamento');
+INSERT INTO public.tipo_detalle(nombre) VALUES('Casa');
+
+/*
+ Habitación individual.
+Habitación doble estándar (una cama doble)
+Habitación doble estándar (dos camas separadas)
+Habitación doble deluxe.
+Estudio o apartamento.
+Suite júnior.
+Suite ejecutiva.
+Suite presidencial.
+ * */
