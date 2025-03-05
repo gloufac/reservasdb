@@ -10,6 +10,7 @@ $function$
 ;
 
 create trigger trg_fecha_modificacion before update on public.reserva for each row execute function fn_update_fecha_modificacion();
+create trigger trg_producto_fecha_modificacion before update on public.producto for each row execute function fn_update_fecha_modificacion();
 
 -- Obtener calendario de disponiblidad
 CREATE OR REPLACE FUNCTION public.get_availability_by_detalle_and_dates(p_detalleid int, p_fechainicio bigint, p_fechafin bigint)

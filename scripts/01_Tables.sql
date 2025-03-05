@@ -148,6 +148,9 @@ CREATE TABLE producto_puntuacion(
 CREATE UNIQUE INDEX producto_puntuacion_ui ON producto_puntuacion USING btree (usuario_id, producto_id);
 
 
+ALTER TABLE producto ADD COLUMN fecha_creacion int8 NOT NULL default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint;
+ALTER TABLE producto ADD COLUMN fecha_modificacion int8 null;
+
 -- =============================================================
 -- ============= SPRINT 04 =====================================
 -- descripcion: pais, departamento, ciudad, direccion, codigo postal esa informacion que sea un texto
