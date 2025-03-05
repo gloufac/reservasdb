@@ -11,7 +11,7 @@ $function$
 
 create trigger trg_fecha_modificacion before update on public.reserva for each row execute function fn_update_fecha_modificacion();
 
-
+-- Obtener calendario de disponiblidad
 CREATE OR REPLACE FUNCTION public.get_availability_by_detalle_and_dates(p_detalleid int, p_fechainicio bigint, p_fechafin bigint)
  RETURNS TABLE(str_fecha varchar(20), dia_inicio bigint, dia_fin bigint, detalleid int, disponibles int, total bigint, disponible boolean)
  LANGUAGE plpgsql
@@ -45,3 +45,22 @@ BEGIN
 END;
 $function$
 ;
+
+-- Obtener lista de hoteles con disponibilidad
+CREATE OR REPLACE FUNCTION public.get_products_availability_by_dates(p_fechainicio bigint, p_fechafin bigint)
+ RETURNS TABLE(id int, nombre varchar)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    RETURN QUERY 
+	SELECT 	p.id as productoid, p.nombre as producto
+	FROM 	producto p 
+	INNER JOIN  producto_detalle pd ON p.id = pd.producto_id 
+		JOIN  get_availability_by_detalle_and_dates(pd.id, p_fechainicio, p_fechafin) dispo ON dispo.disponible = true
+	GROUP BY 1,2
+	HAVING count(distinct pd.id) > 0
+	ORDER BY 1;
+END;
+$function$
+;
+

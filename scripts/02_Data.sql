@@ -30,6 +30,8 @@ INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/favoritos/**');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/usuarios/calificarproducto');
 INSERT INTO public.permisos_api ("mapping") VALUES('/api/reservas/**');
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/moneda/**');
+INSERT INTO public.permisos_api ("mapping") VALUES('/api/tipodetalle/**');
 ----INSERT INTO public.permisos_api ("mapping") VALUES('/api/productos/detalle'); -- post put
 
 
@@ -98,6 +100,16 @@ INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 16);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 6, 16);
 INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 6, 16);
+
+-- 17	/api/moneda/**
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 17);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 17);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 17);
+
+-- 18	/api/tipodetalle/**
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(1, 1, 18);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(2, 1, 18);
+INSERT INTO rol_capacidad_api (rol_id, capacidad_id, permisos_api_id) VALUES(3, 1, 18);
 
 -- =============================================================
 -- ============= SPRINT 03 =====================================
