@@ -236,3 +236,7 @@ CREATE INDEX reserva_cr_ix ON public.reserva USING btree (codigo_reserva);
 CREATE UNIQUE INDEX reserva_ui ON reserva USING btree (usuario_id, producto_detalle_id, fecha_inicio);
 
 ALTER TABLE producto_detalle ADD COLUMN es_eliminado boolean default false not null;
+
+ALTER TABLE reserva ADD COLUMN cantidad_detalle int not null default 0;
+ALTER TABLE reserva ADD COLUMN precio_total_mostrado numeric(16,3) not null default 0;
+ALTER TABLE reserva ADD COLUMN utc_offset varchar(15) not null default '';
