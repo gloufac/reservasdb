@@ -240,3 +240,7 @@ ALTER TABLE producto_detalle ADD COLUMN es_eliminado boolean default false not n
 ALTER TABLE reserva ADD COLUMN cantidad_detalle int not null default 0;
 ALTER TABLE reserva ADD COLUMN precio_total_mostrado numeric(16,3) not null default 0;
 ALTER TABLE reserva ADD COLUMN utc_offset varchar(15) not null default '';
+
+
+ALTER TABLE producto_direccion ADD COLUMN contacto_telefono varchar(30) default '' not null;
+ALTER TABLE producto_direccion ADD COLUMN contacto_email varchar(80) default '' not null;
