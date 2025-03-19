@@ -140,3 +140,27 @@ Suite júnior.
 Suite ejecutiva.
 Suite presidencial.
  * */
+
+
+-- =============================================================
+-- Correccion de datos
+INSERT INTO public.reserva
+(codigo_reserva, usuario_id, tipo_identificacion, identificacion
+	, producto_id, fecha_inicio, fecha_fin, moneda_id, utc_offset
+	, precio_total, peticiones_especiales, precio_total_mostrado, fecha_creacion, fecha_modificacion)
+SELECT 	min(ro.codigo_reserva), min(ro.usuario_id), min(ro.tipo_identificacion), min(ro.identificacion)
+		,pd.producto_id, ro.fecha_inicio, ro.fecha_fin, min(ro.moneda_id), min(ro.utc_offset)
+		, sum(ro.precio_total ), min(ro.peticiones_especiales), sum(ro.precio_total_mostrado)
+		, min(ro.fecha_creacion), min(ro.fecha_modificacion)
+FROM 	reserva_old ro 
+INNER JOIN producto_detalle pd ON ro.producto_detalle_id = pd.id
+GROUP BY pd.producto_id, ro.fecha_inicio, ro.fecha_fin
+ORDER BY 1;
+
+INSERT INTO public.reserva_detalle
+(reserva_id, producto_detalle_id, cantidad_personas_adultas, cantidad_ninos, cantidad, precio)
+SELECT re.id, ro.producto_detalle_id, ro.cantidad_personas_adultas, ro.cantidad_ninos, ro.cantidad_detalle, ro.precio_total
+FROM  reserva re
+INNER JOIN producto_detalle pro on pro.producto_id = re.producto_id
+INNER JOIN reserva_old ro ON ro.producto_detalle_id = pro.id AND ro.usuario_id = re.usuario_id AND ro.fecha_inicio = re.fecha_inicio
+order by ro.codigo_reserva;

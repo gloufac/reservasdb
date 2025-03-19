@@ -217,30 +217,43 @@ CREATE TABLE reserva (
 	usuario_id integer not null,
 	tipo_identificacion varchar(5) not null,
 	identificacion varchar(15) not null,
-	producto_detalle_id int NOT NULL,
+	producto_id int NOT NULL,
 	fecha_inicio int8 NOT NULL,
 	fecha_fin int8 NOT NULL,
-	cantidad_personas_adultas int not null,
-	cantidad_ninos int not null,
 	moneda_id int not null,
+	utc_offset varchar(15) not null default '',
 	precio_total numeric(16,3) not null,
 	peticiones_especiales text null,
+	precio_total_mostrado numeric(16,3) not null default 0,
 	fecha_creacion int8 NOT NULL default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint,
 	fecha_modificacion int8 null,
 	CONSTRAINT reserva_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_usuario FOREIGN KEY(usuario_id) REFERENCES usuario(id),
-	CONSTRAINT fk_producto_detalle FOREIGN KEY(producto_detalle_id) REFERENCES producto_detalle(id),
+	CONSTRAINT fk_producto FOREIGN KEY(producto_id) REFERENCES producto(id),
 	CONSTRAINT fk_moneda FOREIGN KEY(moneda_id) REFERENCES moneda(id)
 );
 CREATE INDEX reserva_cr_ix ON public.reserva USING btree (codigo_reserva);
-CREATE UNIQUE INDEX reserva_ui ON reserva USING btree (usuario_id, producto_detalle_id, fecha_inicio);
+---CREATE UNIQUE INDEX reserva_ui ON reserva USING btree (usuario_id, producto_id, fecha_inicio);
+
 
 ALTER TABLE producto_detalle ADD COLUMN es_eliminado boolean default false not null;
-
-ALTER TABLE reserva ADD COLUMN cantidad_detalle int not null default 0;
-ALTER TABLE reserva ADD COLUMN precio_total_mostrado numeric(16,3) not null default 0;
-ALTER TABLE reserva ADD COLUMN utc_offset varchar(15) not null default '';
-
-
 ALTER TABLE producto_direccion ADD COLUMN contacto_telefono varchar(30) default '' not null;
 ALTER TABLE producto_direccion ADD COLUMN contacto_email varchar(80) default '' not null;
+ALTER TABLE producto_puntuacion ADD COLUMN reserva_id int null;
+ALTER TABLE producto_puntuacion ADD CONSTRAINT fk_reserva FOREIGN KEY(reserva_id) REFERENCES reserva(id);
+
+-- DROP TABLE IF EXISTS reserva_detalle;
+CREATE TABLE reserva_detalle (
+	id bigserial NOT NULL,
+	reserva_id BIGINT NOT NULL,
+	producto_detalle_id int NOT NULL,
+	cantidad_personas_adultas int not null,
+	cantidad_ninos int not null,
+	cantidad int not null,
+	precio numeric(16,3) not null,
+	fecha_creacion int8 NOT NULL default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint,
+	fecha_modificacion int8 null,
+	CONSTRAINT reserva_detalle_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_reserva FOREIGN KEY(reserva_id) REFERENCES reserva(id),
+	CONSTRAINT fk_producto_detalle FOREIGN KEY(producto_detalle_id) REFERENCES producto_detalle(id)
+);

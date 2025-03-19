@@ -10,6 +10,7 @@ $function$
 ;
 
 create trigger trg_fecha_modificacion before update on public.reserva for each row execute function fn_update_fecha_modificacion();
+create trigger trg_fecha_modificacion before update on public.reserva_detalle for each row execute function fn_update_fecha_modificacion();
 create trigger trg_producto_fecha_modificacion before update on public.producto for each row execute function fn_update_fecha_modificacion();
 
 -- Obtener calendario de disponiblidad
@@ -29,19 +30,20 @@ BEGIN
 			,extract('epoch' from (main.fecha + v_horainicio))::bigint AS dia_inicio
 			,extract('epoch' from (main.fecha + v_horafin))::bigint AS dia_fin
 			,pd.id as detalleid
-			,pd.disponibles
-			,count(re.id) as total
-			,CASE WHEN pd.disponibles <= count(re.id) THEN false else true end as disponible
+			,CAST(pd.disponibles - SUM(rd.cantidad) AS INT) as disponibles
+			,SUM(rd.cantidad) as total
+			,CASE WHEN pd.disponibles <= SUM(rd.cantidad) THEN false else true end as disponible
 	FROM   producto_detalle pd
 	JOIN   lst_dates main ON true
-	LEFT JOIN reserva re ON pd.id = re.producto_detalle_id 
+	LEFT JOIN reserva_detalle rd ON pd.id = rd.producto_detalle_id
+	LEFT JOIN reserva re ON re.id = rd.reserva_id
 			AND (
 					(main.fecha + v_horainicio BETWEEN (to_timestamp(re.fecha_inicio) AT TIME ZONE 'UTC') AND (to_timestamp(re.fecha_fin)AT TIME ZONE 'UTC'))
 					OR
 					(main.fecha + v_horafin BETWEEN (to_timestamp(re.fecha_inicio) AT TIME ZONE 'UTC') AND (to_timestamp(re.fecha_fin)AT TIME ZONE 'UTC'))
 				)
 	WHERE 	(pd.id = p_detalleid AND pd.es_eliminado = false)
-	GROUP BY 1,2,3,4,5
+	GROUP BY 1,2,3,4,pd.disponibles
 	ORDER BY 1;
 END;
 $function$
