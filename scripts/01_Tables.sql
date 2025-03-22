@@ -137,15 +137,17 @@ CREATE UNIQUE INDEX producto_favorito_ui ON producto_favorito USING btree (usuar
 CREATE TABLE producto_puntuacion(
 	id serial4 NOT NULL,
 	usuario_id integer not null,
+	reserva_id int8 not null,
 	producto_id integer not null,
 	estrellas smallint not null,
 	resena text null,
 	fechapublicacion int8 not null default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint,
 	CONSTRAINT producto_puntuacion_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_usuario FOREIGN KEY(usuario_id) REFERENCES usuario(id),
-	CONSTRAINT fk_producto FOREIGN KEY(producto_id) REFERENCES producto(id)
+	CONSTRAINT fk_producto FOREIGN KEY(producto_id) REFERENCES producto(id),
+	CONSTRAINT fk_reserva FOREIGN KEY(reserva_id) REFERENCES reserva(id)
 );
-CREATE UNIQUE INDEX producto_puntuacion_ui ON producto_puntuacion USING btree (usuario_id, producto_id);
+CREATE UNIQUE INDEX producto_puntuacion_ui ON producto_puntuacion USING btree (usuario_id, producto_id, reserva_id);
 
 
 ALTER TABLE producto ADD COLUMN fecha_creacion int8 NOT NULL default extract('epoch' from timezone('UTC', CURRENT_TIMESTAMP))::bigint;
@@ -239,8 +241,6 @@ CREATE INDEX reserva_cr_ix ON public.reserva USING btree (codigo_reserva);
 ALTER TABLE producto_detalle ADD COLUMN es_eliminado boolean default false not null;
 ALTER TABLE producto_direccion ADD COLUMN contacto_telefono varchar(30) default '' not null;
 ALTER TABLE producto_direccion ADD COLUMN contacto_email varchar(80) default '' not null;
-ALTER TABLE producto_puntuacion ADD COLUMN reserva_id int null;
-ALTER TABLE producto_puntuacion ADD CONSTRAINT fk_reserva FOREIGN KEY(reserva_id) REFERENCES reserva(id);
 
 -- DROP TABLE IF EXISTS reserva_detalle;
 CREATE TABLE reserva_detalle (
